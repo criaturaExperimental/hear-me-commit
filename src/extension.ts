@@ -30,7 +30,6 @@ export function activate(context: vscode.ExtensionContext) {
                     const output = `[${jira}] ${msg}`;
                     output && copyPaste.copy(output, () => console.log(output));
                 });
-
             }
         });
         function getJira(data:string) {

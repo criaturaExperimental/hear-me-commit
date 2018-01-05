@@ -13,3 +13,6 @@ Copies in the clipboard the Jira task into bracket
 - Uses the name of the branch to get the Jira task
 - Adds brackets
 - Copies in the OS clipboard
+
+### 1.0.0 Custom commit message
+- Adds the commit message input box
