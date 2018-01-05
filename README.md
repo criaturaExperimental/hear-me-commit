@@ -1,4 +1,4 @@
-# Hear me commit
+# Hear me commit / vscode extension
 
 > A vscode extension **WIP**
 > A way to improve my commits message and efficiency in preparing them
