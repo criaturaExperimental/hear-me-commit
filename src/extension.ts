@@ -1,24 +1,50 @@
 'use strict';
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+
+const copyPaste = require('copy-paste');
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
-    // Use the console to output diagnostic information (console.log) and errors (console.error)
-    // This line of code will only be executed once when your extension is activated
+    let simpleGit;
+    try {
+        simpleGit = require('simple-git')(vscode.workspace.workspaceFolders[0].uri.fsPath);
+    } catch (error) {
+        console.error('Couldn\'t find git repository');
+    }
+
     console.log('Congratulations, your extension "hear-me-commit" is now active!');
 
     // The command has been defined in the package.json file
     // Now provide the implementation of the command with  registerCommand
     // The commandId parameter must match the command field in package.json
-    let disposable = vscode.commands.registerCommand('extension.sayHello', () => {
-        // The code you place here will be executed every time your command is executed
-
-        // Display a message box to the user
-        vscode.window.showInformationMessage('Hello World!');
+    let disposable = vscode.commands.registerCommand('extension.copyBracketedJira', () => {
+        if (!simpleGit) {
+            vscode.window.showErrorMessage('This is not a git repository')
+            console.error('Failed to create commit message: This is not a git repository');
+            return;
+        }
+        simpleGit.branchLocal((error, data) => {
+            if (error) {
+                console.error(error);
+            } else {
+                const output = getBracketedJira(data.current);
+                output && copyPaste.copy(output, () => console.log(output));
+            }
+        });
+        function getBracketedJira(data:string) {
+            const str = data;
+            const branch = /CL-\d*/;
+            if (branch.test(str)) {
+                const jira = str.match(branch);
+                vscode.window.showInformationMessage(`EUREKA!! A bracketed Jira was copied to your clipboard`);
+                return `[${jira}]`;
+            } else {
+                vscode.window.showErrorMessage('Are you sure you are in the right branch? Not Jira found');
+                return false;
+            }
+        }
     });
 
     context.subscriptions.push(disposable);
